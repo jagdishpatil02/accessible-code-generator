@@ -9,22 +9,34 @@ import { OpenAIApi, Configuration } from 'openai';
 })
 export class AppComponent implements OnInit {
   answer: string | undefined;
-  contentList:any;
-  contentListArr:any;
+  editableInputContent: string = '';
+  editableOutputContent: string = '';
 
-  
   constructor(private http: HttpClient) {}
 
-  getAnswer() {
+  ngOnInit(): void {
+    let nodeList: NodeListOf<Element> = document.querySelectorAll('.content');
+    let nodeListArray: HTMLElement[] = Array.from(nodeList) as HTMLElement[];
+    nodeListArray.forEach((element: any) => {
+      element.addEventListener('paste', function (e: ClipboardEvent) {
+        e.preventDefault();
+        const text = e.clipboardData?.getData('text/plain');
+        document.execCommand('insertText', false, text);
+      });
+    });
+  }
+
+  // Function to get the value of the contenteditable div
+  getContentValue() {
     const prompt =
-      'return this html code in accessible standard - <button>HI</button> ';
+      'return this html code according to Web Content Accessibility Guidelines -' +
+      this.editableInputContent;
     const apiUrl =
       'https://api.openai.com/v1/engines/text-davinci-003/completions';
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json',
-      Authorization:
-        'Bearer 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',
+      Authorization: 'Bearer test',
     });
 
     const requestBody = {
@@ -36,26 +48,12 @@ export class AppComponent implements OnInit {
 
     this.http.post(apiUrl, requestBody, { headers: headers }).subscribe(
       (response: any) => {
-        this.answer = response.choices[0].text.trim();
+        this.editableOutputContent = response.choices[0].text.trim();
       },
       (error) => {
         console.error('Error:', error);
       }
     );
-  }
-
-  ngOnInit(): void {
-   this.contentList = document.querySelectorAll('.content') as NodeList;
-   this.contentListArr = Array.from(this.contentList);
-
-    console.log(this.contentListArr)
-    this.contentListArr.forEach((element: any )=> {
-      element.addEventListener('paste', function (e: ClipboardEvent) {
-        e.preventDefault();
-        const text = e.clipboardData?.getData('text/plain');
-        document.execCommand('insertText', false, text);
-      });
-    });
-  
+    console.log('editableOutputContent after', this.editableOutputContent);
   }
 }
