@@ -3,38 +3,48 @@ const { Configuration, OpenAIApi } = require("openai");
 
 const app = express();
 const config = new Configuration({
-  apiKey: "YOUR_API_KEY",
+  apiKey: "API_KEY",
 });
 
 const openai = new OpenAIApi(config);
 
-app.get("/joke", async (req, res) => {
+app.get("/generate-text", async (req, res) => {
   try {
-    const prompt = `
-			what is the capital of india?
-		`;
-
-    const response = await openai.createCompletion({
-      model: "text-davinci-003",
-      prompt: prompt,
-      max_tokens: 2048,
-      temperature: 1,
+    const response = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [
+        { role: "system", content: "You are a helpful assistant." },
+        { role: "user", content: "who won the ipl in 2018?" },
+      ],
     });
+    const parsableJSONresponse = response.data.choices[0].message;
 
-    console.log("response.data", response.data);
-    const parsableJSONresponse = response.data.choices[0].text;
-    console.log("parsableJSONresponse", parsableJSONresponse);
-
-    // const parsedResponse = JSON.parse(parsableJSONresponse);
-    // console.log("parsedResponse", parsedResponse);
-    console.log(typeof parsableJSONresponse);
-    res.write(parsableJSONresponse);
+    res.json(parsableJSONresponse);
     res.end();
   } catch (error) {
-    res.status(500).json({ error: "An error occurred" });
+    res.status(500).json(error);
   }
 });
 
 app.listen(3000, () => {
   console.log("API server is running on port 3000");
 });
+
+// const { Configuration, OpenAIApi } = require("openai");
+
+// const configuration = new Configuration({
+//   apiKey: "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",
+// });
+// const openai = new OpenAIApi(configuration);
+
+// async function myFunction() {
+//   const completion = await openai.createChatCompletion({
+//     model: "gpt-3.5-turbo",
+//     messages: [
+//       { role: "system", content: "You are a helpful assistant." },
+//       { role: "user", content: "who won the ipl in 2018?" },
+//     ],
+//   });
+//   console.log(completion.data.choices[0].message);
+// }
+// myFunction();

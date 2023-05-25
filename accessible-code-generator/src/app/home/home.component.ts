@@ -36,7 +36,7 @@ export class HomeComponent implements OnInit {
 
     const requestBody = {
       prompt: prompt,
-      max_tokens: 2049,
+      max_tokens: 4096,
       temperature: 0.7,
       n: 1,
     };
