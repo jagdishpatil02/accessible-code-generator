@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
+import { Configuration, OpenAIApi } from 'openai';
 
 @Component({
   selector: 'app-home',
@@ -11,6 +12,12 @@ export class HomeComponent implements OnInit {
   answer: string | undefined;
   editableInputContent: string = '';
   editableOutputContent: string = '';
+  response: any;
+  readonly configuration = new Configuration({
+    apiKey: 'your_key',
+  });
+  readonly openai = new OpenAIApi(this.configuration);
+
   ngOnInit(): void {
     let contentlist: NodeListOf<Element> =
       document.querySelectorAll('.content');
@@ -27,28 +34,26 @@ export class HomeComponent implements OnInit {
   }
 
   // Function to get the value of the contenteditable div
-  getContentValue() {
-    const prompt =
-      'return this html code according to Web Content Accessibility Guidelines -' +
-      this.editableInputContent;
-    const apiUrl =
-      'https://api.openai.com/v1/engines/text-davinci-003/completions';
-
-    const requestBody = {
-      prompt: prompt,
-      max_tokens: 4096,
-      temperature: 0.7,
-      n: 1,
-    };
-
-    this.http.post(apiUrl, requestBody).subscribe(
-      (response: any) => {
-        this.editableOutputContent = response.choices[0].text.trim();
-      },
-      (error) => {
-        console.error('Error:', error);
-      }
-    );
-    console.log('editableOutputContent after', this.editableOutputContent);
+  public async getContentValue() {
+    this.response = await this.openai
+      .createChatCompletion({
+        model: 'gpt-3.5-turbo',
+        messages: [
+          {
+            role: 'system',
+            content:
+              'You are a helpful assistant in web dev techonologies. Return html code according to Web Content Accessibility Guidelines(WCAG) ',
+          },
+          { role: 'user', content: this.editableInputContent },
+        ],
+      })
+      .then((res: any) => {
+        console.log(res);
+        console.log(res.data.choices[0].message.content.trim());
+        this.editableOutputContent = res.data.choices[0].message.content.trim();
+      })
+      .catch((y) => {
+        console.log('y: ', y);
+      });
   }
 }

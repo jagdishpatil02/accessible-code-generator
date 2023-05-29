@@ -3,14 +3,16 @@
         <div contenteditable="true" class="w-full h-full border-2" class="content border-2 h-full w-full outline-0	p-2"
             #ecinput (input)="editableInputContent=ecinput.innerText"></div>
     </div>
-    <div class="relative md:flex w-2/12 flex-col justify-center">
+    <div class="relative md:flex w-2/12 flex-col justify-center	">
         <button class="block w-full bg-indigo-600 mt-4 py-2 rounded-2xl text-white font-semibold mb-2"
             (click)="getContentValue()">
             Get code
         </button>
     </div>
-    <div class="w-4/5 p-4">
-        <div contenteditable="true" class="content border-2 h-full w-full outline-0 p-2"
+    <div class="w-4/5 p-4 ">
+        <div contenteditable="true" class="content border-2 h-full w-full outline-0 p-2 overflow-y-scroll	"
             [innerText]="editableOutputContent"></div>
+
     </div>
+
 </div>
