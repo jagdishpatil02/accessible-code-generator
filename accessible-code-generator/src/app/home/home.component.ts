@@ -11,7 +11,6 @@ export class HomeComponent implements OnInit {
   constructor(private http: HttpClient) {}
   answer: string | undefined;
   editableInputContent: string = '';
-  editableOutputContent: string = '';
   response: any;
   readonly configuration = new Configuration({
     apiKey: 'your_key',
@@ -50,10 +49,44 @@ export class HomeComponent implements OnInit {
       .then((res: any) => {
         console.log(res);
         console.log(res.data.choices[0].message.content.trim());
-        this.editableOutputContent = res.data.choices[0].message.content.trim();
+        // this.editableOutputContent = res.data.choices[0].message.content.trim();
+        // Extract the HTML code and text content from the API response
+        let htmlCode = this.extractHtmlCode(
+          res.data.choices[0].message.content.trim()
+        );
+        let textContent = this.extractTextContent(
+          res.data.choices[0].message.content.trim()
+        );
+
+        // Create the <pre> element for displaying the HTML code
+        var preElement = document.createElement('pre');
+        preElement.textContent = htmlCode;
+
+        // Create the <p> element for displaying the text content
+        var paragraphElement = document.createElement('p');
+        paragraphElement.textContent = textContent;
+
+        let editableOutputContent: any = document.getElementById(
+          'editableOutputContent'
+        );
+
+        editableOutputContent.appendChild(paragraphElement);
+        editableOutputContent.appendChild(preElement);
       })
       .catch((y) => {
         console.log('y: ', y);
       });
+  }
+
+  // Function to extract HTML code from the combined string
+  extractHtmlCode(apiResponse: any) {
+    var htmlCode = apiResponse.match(/```html\n(.*?)\n```/s);
+    return htmlCode ? htmlCode[1] : '';
+  }
+
+  // Function to extract text content from the combined string
+  extractTextContent(apiResponse: any) {
+    var textContent = apiResponse.replace(/```html\n.*?\n```\n/s, '');
+    return textContent.trim();
   }
 }
