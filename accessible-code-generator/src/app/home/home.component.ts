@@ -12,6 +12,8 @@ export class HomeComponent implements OnInit {
   answer: string | undefined;
   editableInputContent: string = '';
   response: any;
+  isApiCallInProgress: boolean = false;
+
   readonly configuration = new Configuration({
     apiKey: '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',
   });
@@ -34,6 +36,8 @@ export class HomeComponent implements OnInit {
 
   // Function to get the value of the contenteditable div
   public async getContentValue() {
+    this.isApiCallInProgress = true;
+
     this.response = await this.openai
       .createChatCompletion({
         model: 'gpt-3.5-turbo',
@@ -47,10 +51,7 @@ export class HomeComponent implements OnInit {
         ],
       })
       .then((res: any) => {
-        console.log(typeof res);
-        console.log(res.data.choices[0].message.content.trim());
-        // this.editableOutputContent = res.data.choices[0].message.content.trim();
-        // Extract the HTML code and text content from the API response4
+        // Extract the HTML code and text content from the API response
         let htmlCode = this.extractHtmlCode(
           res.data.choices[0].message.content.trim()
         );
@@ -74,8 +75,11 @@ export class HomeComponent implements OnInit {
           editableOutputContent.appendChild(paragraphElement);
           editableOutputContent.appendChild(preElement);
         }
+        this.isApiCallInProgress = false;
       })
       .catch((y) => {
+        this.isApiCallInProgress = false;
+
         console.log('y: ', y);
       });
   }
