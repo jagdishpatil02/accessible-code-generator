@@ -13,7 +13,7 @@ export class HomeComponent implements OnInit {
   editableInputContent: string = '';
   response: any;
   readonly configuration = new Configuration({
-    apiKey: 'your_key',
+    apiKey: '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',
   });
   readonly openai = new OpenAIApi(this.configuration);
 
@@ -23,7 +23,7 @@ export class HomeComponent implements OnInit {
     let contentlistArr: HTMLElement[] = Array.from(
       contentlist
     ) as HTMLElement[];
-    contentlistArr.forEach((element: any) => {
+    contentlistArr.forEach((element: HTMLElement) => {
       element.addEventListener('paste', function (e: ClipboardEvent) {
         e.preventDefault();
         const text = e.clipboardData?.getData('text/plain');
@@ -47,10 +47,10 @@ export class HomeComponent implements OnInit {
         ],
       })
       .then((res: any) => {
-        console.log(res);
+        console.log(typeof res);
         console.log(res.data.choices[0].message.content.trim());
         // this.editableOutputContent = res.data.choices[0].message.content.trim();
-        // Extract the HTML code and text content from the API response
+        // Extract the HTML code and text content from the API response4
         let htmlCode = this.extractHtmlCode(
           res.data.choices[0].message.content.trim()
         );
@@ -66,12 +66,14 @@ export class HomeComponent implements OnInit {
         var paragraphElement = document.createElement('p');
         paragraphElement.textContent = textContent;
 
-        let editableOutputContent: any = document.getElementById(
+        let editableOutputContent: HTMLElement | null = document.getElementById(
           'editableOutputContent'
         );
 
-        editableOutputContent.appendChild(paragraphElement);
-        editableOutputContent.appendChild(preElement);
+        if (editableOutputContent !== null) {
+          editableOutputContent.appendChild(paragraphElement);
+          editableOutputContent.appendChild(preElement);
+        }
       })
       .catch((y) => {
         console.log('y: ', y);
@@ -79,13 +81,13 @@ export class HomeComponent implements OnInit {
   }
 
   // Function to extract HTML code from the combined string
-  extractHtmlCode(apiResponse: any) {
+  extractHtmlCode(apiResponse: string) {
     var htmlCode = apiResponse.match(/```html\n(.*?)\n```/s);
     return htmlCode ? htmlCode[1] : '';
   }
 
   // Function to extract text content from the combined string
-  extractTextContent(apiResponse: any) {
+  extractTextContent(apiResponse: string) {
     var textContent = apiResponse.replace(/```html\n.*?\n```\n/s, '');
     return textContent.trim();
   }
