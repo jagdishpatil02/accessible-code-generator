@@ -15,7 +15,7 @@ export class HomeComponent implements OnInit {
   isApiCallInProgress: boolean = false;
 
   readonly configuration = new Configuration({
-    apiKey: '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',
+    apiKey: 'Your_API_Key',
   });
   readonly openai = new OpenAIApi(this.configuration);
 
