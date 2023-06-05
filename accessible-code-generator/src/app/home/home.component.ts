@@ -11,7 +11,7 @@ export class HomeComponent implements OnInit {
   constructor(private http: HttpClient) {}
   answer: string | undefined;
   editableInputContent: string = '';
-  response: any;
+
   isApiCallInProgress: boolean = false;
 
   readonly configuration = new Configuration({
@@ -38,7 +38,7 @@ export class HomeComponent implements OnInit {
   public async getContentValue() {
     this.isApiCallInProgress = true;
 
-    this.response = await this.openai
+    await this.openai
       .createChatCompletion({
         model: 'gpt-3.5-turbo',
         messages: [
@@ -50,37 +50,45 @@ export class HomeComponent implements OnInit {
           { role: 'user', content: this.editableInputContent },
         ],
       })
-      .then((res: any) => {
-        // Extract the HTML code and text content from the API response
-        let htmlCode = this.extractHtmlCode(
-          res.data.choices[0].message.content.trim()
-        );
-        let textContent = this.extractTextContent(
-          res.data.choices[0].message.content.trim()
-        );
+      .then((res) => {
+        if (res) {
+          // Extract the HTML code and text content from the API response
+          if (
+            res &&
+            res.data &&
+            res.data.choices &&
+            res.data.choices.length > 0 &&
+            res.data.choices[0].message &&
+            res.data.choices[0].message.content
+          ) {
+            let htmlCode = this.extractHtmlCode(
+              res?.data.choices[0]?.message.content.trim() ?? ''
+            );
+            let textContent = this.extractTextContent(
+              res?.data.choices[0]?.message.content.trim()
+            );
 
-        // Create the <pre> element for displaying the HTML code
-        var preElement = document.createElement('pre');
-        preElement.textContent = htmlCode;
+            // Create the <pre> element for displaying the HTML code
+            var preElement = document.createElement('pre');
+            preElement.textContent = htmlCode;
 
-        // Create the <p> element for displaying the text content
-        var paragraphElement = document.createElement('p');
-        paragraphElement.textContent = textContent;
+            // Create the <p> element for displaying the text content
+            var paragraphElement = document.createElement('p');
+            paragraphElement.textContent = textContent;
 
-        let editableOutputContent: HTMLElement | null = document.getElementById(
-          'editableOutputContent'
-        );
+            let editableOutputContent: HTMLElement | null =
+              document.getElementById('editableOutputContent');
 
-        if (editableOutputContent !== null) {
-          editableOutputContent.appendChild(paragraphElement);
-          editableOutputContent.appendChild(preElement);
+            if (editableOutputContent !== null) {
+              editableOutputContent.appendChild(paragraphElement);
+              editableOutputContent.appendChild(preElement);
+            }
+            this.isApiCallInProgress = false;
+          }
         }
-        this.isApiCallInProgress = false;
       })
       .catch((y) => {
         this.isApiCallInProgress = false;
-
-        console.log('y: ', y);
       });
   }
 
