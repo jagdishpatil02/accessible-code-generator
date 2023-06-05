@@ -14,7 +14,7 @@ export class AuthInterceptor implements HttpInterceptor {
     next: HttpHandler
   ): Observable<HttpEvent<any>> {
     // Get the token from wherever you have stored it
-    const token = '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';
+    const token = 'YOUR_API_KEY';
 
     // Clone the request and add the authorization header
     const authReq = request.clone({
