@@ -1,21 +1,21 @@
 import { Component, OnInit } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Configuration, OpenAIApi } from 'openai';
-
+import { HomeService } from './home.service';
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient, private homeService: HomeService) {}
   answer: string | undefined;
   editableInputContent: string = '';
 
   isApiCallInProgress: boolean = false;
 
   readonly configuration = new Configuration({
-    apiKey: 'Your_API_Key',
+    apiKey: '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',
   });
   readonly openai = new OpenAIApi(this.configuration);
 
@@ -37,35 +37,22 @@ export class HomeComponent implements OnInit {
   // Function to get the value of the contenteditable div
   public async getContentValue() {
     this.isApiCallInProgress = true;
-
-    await this.openai
-      .createChatCompletion({
-        model: 'gpt-3.5-turbo',
-        messages: [
-          {
-            role: 'system',
-            content:
-              'You are a helpful assistant in web dev techonologies. Return html code according to Web Content Accessibility Guidelines(WCAG) ',
-          },
-          { role: 'user', content: this.editableInputContent },
-        ],
-      })
-      .then((res) => {
+    this.homeService.generateAccesibleCode(this.editableInputContent).subscribe(
+      (res: any) => {
         if (res) {
           // Extract the HTML code and text content from the API response
           if (
             res &&
-            res.data &&
-            res.data.choices &&
-            res.data.choices.length > 0 &&
-            res.data.choices[0].message &&
-            res.data.choices[0].message.content
+            res.choices &&
+            res.choices.length > 0 &&
+            res.choices[0].message &&
+            res.choices[0].message.content
           ) {
             let htmlCode = this.extractHtmlCode(
-              res?.data.choices[0]?.message.content.trim() ?? ''
+              res?.choices[0]?.message.content.trim() ?? ''
             );
             let textContent = this.extractTextContent(
-              res?.data.choices[0]?.message.content.trim()
+              res?.choices[0]?.message.content.trim()
             );
 
             // Create the <pre> element for displaying the HTML code
@@ -86,10 +73,13 @@ export class HomeComponent implements OnInit {
             this.isApiCallInProgress = false;
           }
         }
-      })
-      .catch((y) => {
+      },
+      (error) => {
+        // Handle error
         this.isApiCallInProgress = false;
-      });
+        console.error('An error occurred:', error);
+      }
+    );
   }
 
   // Function to extract HTML code from the combined string

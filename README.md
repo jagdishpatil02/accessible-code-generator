@@ -21,8 +21,7 @@ The Accessible Code Generator is a powerful tool designed to assist developers i
 
 4. Run `ng serve` (Ensure that you have the Angular CLI installed on your machine. To install the Angular CLI, use the command `npm install -g @angular/cli`).
 
-5. Go to home.component.ts file and replace your `apiKey: 'YOUR_KEY'` with your own API Key that you generated from https://platform.openai.com/account/api-keys 
-
+5. Go to auth.interceptor.ts file and replace your `const token = 'YOUR_API_KEY'` with your own API Key that you generated from https://platform.openai.com/account/api-keys
 
 ## Tech Stack
 
