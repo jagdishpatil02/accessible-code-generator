@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
 import { Configuration, OpenAIApi } from 'openai';
 import { HomeService } from './home.service';
 @Component({
@@ -8,7 +7,7 @@ import { HomeService } from './home.service';
   styleUrls: ['./home.component.scss'],
 })
 export class HomeComponent implements OnInit {
-  constructor(private http: HttpClient, private homeService: HomeService) {}
+  constructor(private homeService: HomeService) {}
   answer: string | undefined;
   editableInputContent: string = '';
 
@@ -35,24 +34,31 @@ export class HomeComponent implements OnInit {
   }
 
   // Function to get the value of the contenteditable div
-  public async getContentValue() {
+  getContentValue() {
     this.isApiCallInProgress = true;
     this.homeService.generateAccesibleCode(this.editableInputContent).subscribe(
-      (res: any) => {
+      (res) => {
+        const response = res as {
+          choices: {
+            message: {
+              content: string;
+            };
+          }[];
+        };
+
         if (res) {
           // Extract the HTML code and text content from the API response
           if (
-            res &&
-            res.choices &&
-            res.choices.length > 0 &&
-            res.choices[0].message &&
-            res.choices[0].message.content
+            response.choices &&
+            response.choices.length > 0 &&
+            response.choices[0].message &&
+            response.choices[0].message.content
           ) {
             let htmlCode = this.extractHtmlCode(
-              res?.choices[0]?.message.content.trim() ?? ''
+              response.choices[0].message.content.trim() ?? ''
             );
             let textContent = this.extractTextContent(
-              res?.choices[0]?.message.content.trim()
+              response.choices[0].message.content.trim()
             );
 
             // Create the <pre> element for displaying the HTML code
@@ -67,6 +73,8 @@ export class HomeComponent implements OnInit {
               document.getElementById('editableOutputContent');
 
             if (editableOutputContent !== null) {
+              editableOutputContent.innerText = '';
+              editableOutputContent.innerHTML = '';
               editableOutputContent.appendChild(paragraphElement);
               editableOutputContent.appendChild(preElement);
             }
