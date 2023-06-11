@@ -13,11 +13,6 @@ export class HomeComponent implements OnInit {
 
   isApiCallInProgress: boolean = false;
 
-  readonly configuration = new Configuration({
-    apiKey: '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',
-  });
-  readonly openai = new OpenAIApi(this.configuration);
-
   ngOnInit(): void {
     let contentlist: NodeListOf<Element> =
       document.querySelectorAll('.content');
