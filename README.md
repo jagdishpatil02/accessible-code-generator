@@ -1,6 +1,6 @@
 # Accessible Code Generator
 
-The Accessible Code Generator is a powerful tool designed to assist developers in suggesting accessible code changes based on WCAG (Web Content Accessibility Guidelines) standards. This tool utilizes the gpt-3.5-turbo model developed by OpenAI.
+The Accessible Code Generator is a GPT wrapper designed to assist developers in suggesting accessible code changes based on WCAG (Web Content Accessibility Guidelines) standards. This tool utilizes the gpt-3.5-turbo model developed by OpenAI.
 
 ![Accessible Code Generator](https://github.com/jagdishpatil02/accessible-code-generator/assets/18285635/e9c8ed35-bfba-4b74-92fc-160782a3509c)
 
