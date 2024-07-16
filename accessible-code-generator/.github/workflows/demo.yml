@@ -1,0 +1,22 @@
+name: Build an angular app
+
+on: push
+  branches: [main]
+
+  jobs:
+    build-angular:
+      runs-on: ubuntu-latest
+
+      steps:
+        - uses: actions/checkout@4
+
+        - name: Setup Node JS
+          uses: actions/setup-node@v4
+          with:
+            node-version:18.x
+
+        - name: Install Dependecies
+          run: npm install
+
+        - name: Build
+          run: npm run build
